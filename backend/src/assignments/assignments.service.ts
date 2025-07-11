@@ -1,4 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AssignmentDto } from './dto/assignment.dto';
+import { Assignment } from './entities/assignment.entity';
+import { Repository } from 'typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Patient } from 'src/patients/entities/patient.entity';
+import { Medication } from 'src/medications/entities/medication.entity';
 
 @Injectable()
-export class AssignmentsService {}
+export class AssignmentsService {
+    
+
+    constructor(
+        @InjectRepository(Assignment) private assignRepository: Repository<Assignment>,
+        @InjectRepository(Patient) private patientRepository: Repository<Patient>,
+        @InjectRepository(Medication) private medicationRepository: Repository<Medication>
+    ){ 
+    }
+
+    async assignMedicationPatient(patientId: number, assignDto: AssignmentDto): Promise<AssignmentDto> {
+        const patient = await this.patientRepository.findOneBy({ patientId:patientId})
+        const medication = await this.medicationRepository.findOneBy({ medicationId: assignDto.medicationId})
+        if(!patient)
+            throw new NotFoundException(`Patient not found`)
+        
+        if(!medication)
+            throw new NotFoundException(`Medication not found`)
+
+        const assign = this.assignRepository.create({
+            patientId,
+            medicationId: assignDto.medicationId,
+            startDate: assignDto.startDate,
+            numberOfDays: assignDto.numberOfDays,
+        });
+
+        return this.assignRepository.save(assign);
+    }
+
+    async getMedicationsByPatient(patientId: number){//: Promise<Medication[]> {
+
+        const patient = await this.patientRepository.findOne({ where: { patientId: patientId } });
+
+        if (!patient) {
+            throw new NotFoundException(`Patient with not found`);
+        }
+
+        const assignments = await this.assignRepository.find({
+            where: { patient: { patientId: patientId } },
+            relations: ['medication'],
+        });
+
+        return assignments.map(assignment => assignment.medication);
+}
+
+
+}
