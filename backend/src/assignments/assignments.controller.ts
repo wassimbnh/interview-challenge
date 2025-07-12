@@ -21,6 +21,11 @@ export class AssignmentsController {
         return this.assignService.getMedicationsByPatient(patientId)
     }
 
+    @Get("/get/by-patient")
+    getAllAssignmentsByPatient(@Query("patientId") patientId: number){
+        return this.assignService.getAssignments(patientId)
+    }
+
     @Get("/get/remain/treatment-days")
     getRemainTreatmentDaysByPatient(@Query("patientId") patientId: number){
         return this.assignService.getRemainTreatmentDaysByPatient(patientId)

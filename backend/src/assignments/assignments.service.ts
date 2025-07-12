@@ -67,13 +67,7 @@ export class AssignmentsService {
             });
     }
 
-    async getAssignments(patientId: number): Promise<AssignmentDto[]>{
-
-        const patient = await this.patientRepository.findOne({ where: { patientId: patientId } });
-
-        if (!patient) {
-            throw new NotFoundException(`Patient with not found`);
-        }
+    async getAssignments(patientId: number): Promise<AssignmentDto[]>{        
 
         const assignments = await this.assignRepository.find({
             where: { patient: { patientId: patientId } },
