@@ -1,27 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsDateString, Min, IsNotEmpty } from 'class-validator';
-import { Medication } from 'src/medications/entities/medication.entity';
-import { Patient } from 'src/patients/entities/patient.entity';
 
-export class AssignmentDto {
+export class CreateAssignmentDto {
 
+  @ApiProperty()
   @IsInt()
   @IsNotEmpty()
   patientId: number;
 
-  
+  @ApiProperty()
   @IsInt()
   medicationId: number;
 
+  @ApiProperty()
   @IsDateString()
-  startDate: Date;
+  startDate: string;
 
   @ApiProperty()
   @IsInt()
   @Min(1)
   numberOfDays: number;
 
-  patient: Patient;
-
-  medication: Medication;
 }

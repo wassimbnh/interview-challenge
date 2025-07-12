@@ -5,11 +5,13 @@ import { Repository } from 'typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Patient } from 'src/patients/entities/patient.entity';
 import { Medication } from 'src/medications/entities/medication.entity';
+import { CreateAssignmentDto } from './dto/create-assignment.dto';
+import { differenceInDays, addDays } from 'date-fns';
 
 @Injectable()
 export class AssignmentsService {
     
-
+    
     constructor(
         @InjectRepository(Assignment) private assignRepository: Repository<Assignment>,
         @InjectRepository(Patient) private patientRepository: Repository<Patient>,
@@ -17,7 +19,8 @@ export class AssignmentsService {
     ){ 
     }
 
-    async assignMedicationPatient(patientId: number, assignDto: AssignmentDto): Promise<AssignmentDto> {
+
+    async assignMedicationPatient(patientId: number, assignDto: CreateAssignmentDto): Promise<AssignmentDto> {
         const patient = await this.patientRepository.findOneBy({ patientId:patientId})
         const medication = await this.medicationRepository.findOneBy({ medicationId: assignDto.medicationId})
         if(!patient)
@@ -36,7 +39,34 @@ export class AssignmentsService {
         return this.assignRepository.save(assign);
     }
 
-    async getMedicationsByPatient(patientId: number){//: Promise<Medication[]> {
+
+    async getMedicationsByPatient(patientId: number): Promise<Medication[]> {
+
+        const assignments = await this.getAssignments(patientId)
+
+        return assignments.map(assignment => assignment.medication);
+    }
+
+
+    async getRemainTreatmentDaysByPatient(patientId: number): Promise<any>{
+        const assignments = await this.getAssignments(patientId);
+        
+        const today = new Date();
+
+        return assignments.map(ass => {
+            const start = new Date(ass.startDate);
+            const end = addDays(start, ass.numberOfDays);
+            const remaining = Math.max(0, differenceInDays(end, today));
+
+                return {
+                medicationId: ass.medicationId,
+                medicationName: ass.medication?.name,
+                remainingDays: remaining,
+                };
+            });
+    }
+
+    async getAssignments(patientId: number): Promise<AssignmentDto[]>{
 
         const patient = await this.patientRepository.findOne({ where: { patientId: patientId } });
 
@@ -49,8 +79,8 @@ export class AssignmentsService {
             relations: ['medication'],
         });
 
-        return assignments.map(assignment => assignment.medication);
+        return assignments
+    }
 }
 
 
-}

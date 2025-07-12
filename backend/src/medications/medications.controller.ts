@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, ValidationPipe } from '@nestjs/common';
 import { MedicationsService } from './medications.service';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { UpdateMedicationDto } from './dto/update-medication.dto';
@@ -11,8 +11,8 @@ export class MedicationsController {
     ){}
 
     @Post("/create")
-    createMedication(@Body() medicationDTO: CreateMedicationDto){
-        this.medicationsService.createMedication(medicationDTO)
+    createMedication(@Body(ValidationPipe) medicationDTO: CreateMedicationDto){
+        return this.medicationsService.createMedication(medicationDTO)
     }
 
     @Get("/all")
@@ -26,7 +26,7 @@ export class MedicationsController {
     }
 
     @Put("/update")
-    updateMedication(@Query("id") id: number, @Body() updateMedicationDto: UpdateMedicationDto){
+    updateMedication(@Query("id") id: number, @Body(ValidationPipe) updateMedicationDto: UpdateMedicationDto){
         return this.medicationsService.updateMedication(id, updateMedicationDto)
     }
 

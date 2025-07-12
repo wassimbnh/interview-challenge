@@ -12,7 +12,7 @@ export class Assignment {
   medicationId: number;
 
   @Column({ type: 'date' })
-  startDate: string;
+  startDate: Date;
 
   @Column()
   numberOfDays: number;

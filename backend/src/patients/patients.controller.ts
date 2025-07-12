@@ -34,5 +34,4 @@ export class PatientsController {
         return this.patientsService.deletePatient(+id);
     }
 
-
 }
