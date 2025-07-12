@@ -7,6 +7,7 @@ import { Patient } from 'src/patients/entities/patient.entity';
 import { Medication } from 'src/medications/entities/medication.entity';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { differenceInDays, addDays } from 'date-fns';
+import { RemainTreatment } from './interfaces/remain-days.interface';
 
 @Injectable()
 export class AssignmentsService {
@@ -48,7 +49,7 @@ export class AssignmentsService {
     }
 
 
-    async getRemainTreatmentDaysByPatient(patientId: number): Promise<any>{
+    async getRemainTreatmentDaysByPatient(patientId: number): Promise<RemainTreatment[]>{
         const assignments = await this.getAssignments(patientId);
         
         const today = new Date();
