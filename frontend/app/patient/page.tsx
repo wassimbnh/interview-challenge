@@ -79,7 +79,7 @@ export default function PatientTable() {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={handleAdd} className="flex items-center gap-2">
+                <Button onClick={handleAdd} className="flex items-center gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
                   Add Patient
                 </Button>
@@ -106,44 +106,44 @@ export default function PatientTable() {
                   </div>
                   
                   <div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="dateOfBirth" className="text-right">
-    Date of Birth
-  </Label>
-  <div className="col-span-3">
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="w-full justify-start text-left font-normal"
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {formData.dateOfBirth
-            ? format(new Date(formData.dateOfBirth), "yyyy-MM-dd")
-            : "Select date"}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined}
-          onSelect={(date) =>
-            setFormData({
-              ...formData,
-              dateOfBirth: date ? format(date, "yyyy-MM-dd") : "",
-            })
-          }
-          initialFocus
-        />
-      </PopoverContent>
-    </Popover>
-  </div>
-</div>
+                  <Label htmlFor="dateOfBirth" className="text-right">
+                    Date of Birth
+                  </Label>
+                  <div className="col-span-3">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.dateOfBirth
+                            ? format(new Date(formData.dateOfBirth), "yyyy-MM-dd")
+                            : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined}
+                          onSelect={(date) =>
+                            setFormData({
+                              ...formData,
+                              dateOfBirth: date ? format(date, "yyyy-MM-dd") : "",
+                            })
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button onClick={handleCancel} variant="outline">
+                </div>
+                <div className="flex justify-end gap-2 cursor-pointer">
+                  <Button onClick={handleCancel} className="cursor-pointer" variant="outline">
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} className="flex items-center gap-2">
+                  <Button onClick={handleSave} className="flex items-center gap-2 cursor-pointer">
                     <Save className="h-4 w-4" />
                     Save Patient
                   </Button>
@@ -175,7 +175,7 @@ export default function PatientTable() {
                         onClick={() => handleDelete(patient.patientId)}
                         variant="destructive"
                         size="sm"
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 cursor-pointer"
                       >
                         <Trash2 className="h-3 w-3" />
                         Delete

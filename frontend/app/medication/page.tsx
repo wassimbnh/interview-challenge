@@ -78,7 +78,7 @@ export default function CrudTable() {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={handleAdd} className="flex items-center gap-2">
+                <Button onClick={handleAdd} className="flex items-center gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
                   Add Medication
                 </Button>
@@ -128,11 +128,11 @@ export default function CrudTable() {
                     />
                   </div>
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button onClick={handleCancel} variant="outline">
+                <div className="flex justify-end gap-2 cursor-pointer">
+                  <Button onClick={handleCancel} className="cursor-pointer" variant="outline">
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} className="flex items-center gap-2">
+                  <Button onClick={handleSave} className="flex items-center gap-2 cursor-pointer">
                     <Save className="h-4 w-4" />
                     Save Medication
                   </Button>
