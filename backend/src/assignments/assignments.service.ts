@@ -50,21 +50,34 @@ export class AssignmentsService {
 
 
     async getRemainTreatmentDaysByPatient(patientId: number): Promise<RemainTreatment[]>{
-        const assignments = await this.getAssignments(patientId);
+        const assignments = await this.getAllAssignmentsByPatient(patientId);
         
         const today = new Date();
 
-        return assignments.map(ass => {
-            const start = new Date(ass.startDate);
-            const end = addDays(start, ass.numberOfDays);
+        return assignments.map(assign => {
+            const start = new Date(assign.startDate);
+            const end = addDays(start, assign.numberOfDays);
             const remaining = Math.max(0, differenceInDays(end, today));
 
                 return {
-                medicationId: ass.medicationId,
-                medicationName: ass.medication?.name,
+                medicationId: assign.medicationId,
+                medicationName: assign.medication?.name,
+                patientId: assign.patient.patientId,
+                patientName: assign.patient.name,
                 remainingDays: remaining,
                 };
             });
+    }
+
+    async getAllAssignmentsByPatient(patientId: number): Promise<AssignmentDto[]>{        
+
+        const assignments = await this.assignRepository.find({
+            where: { patient: { patientId: patientId } },
+            relations: ['medication', 'patient'],
+
+        });
+
+        return assignments
     }
 
     async getAssignments(patientId: number): Promise<AssignmentDto[]>{        

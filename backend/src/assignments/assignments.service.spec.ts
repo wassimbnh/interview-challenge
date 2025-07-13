@@ -110,7 +110,7 @@ describe('AssignmentsService', () => {
   it('should return an empty list if no assignments are found', async () => {
     mockAssignmentRepository.find.mockResolvedValue([]);
 
-    const result = await service.getRemainTreatmentDaysByPatient(999); // random patientId
+    const result = await service.getRemainTreatmentDaysByPatient(999); // not existing patientId
 
     expect(result).toEqual([]);
   });

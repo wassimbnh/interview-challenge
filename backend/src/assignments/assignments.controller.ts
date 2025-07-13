@@ -23,7 +23,7 @@ export class AssignmentsController {
 
     @Get("/get/by-patient")
     getAllAssignmentsByPatient(@Query("patientId") patientId: number){
-        return this.assignService.getAssignments(patientId)
+        return this.assignService.getAllAssignmentsByPatient(patientId)
     }
 
     @Get("/get/remain/treatment-days")
