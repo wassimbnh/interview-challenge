@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus, Trash2, Save, X } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
@@ -24,20 +24,16 @@ import { format } from "date-fns"
 import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover"
 import { Calendar } from "@/app/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
+import { BACKEND_URL } from "../config"
 
 export default function PatientTable() {
-  const [patients, setPatients] = useState<Patient[]>([
-    {
-      patientId: 1,
-      name: "Mike",
-      dateOfBirth: "2020-05-05",
-    },
-    {
-      patientId: 2,
-      name: "Zack",
-      dateOfBirth: "2015-05-05",
-    },
-  ])
+  const [patients, setPatients] = useState<Patient[]>([])
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/patients/all`)
+      .then((res) => res.json())
+      .then((data) => setPatients(data))
+  }, [])
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [formData, setFormData] = useState({

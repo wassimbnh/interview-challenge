@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus, Trash2, Save } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
@@ -20,38 +20,15 @@ import {
   DialogTrigger,
 } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
+import { BACKEND_URL } from "../config"
 
-interface Patient {
-  patientId: number
-  name: string
-  dateOfBirth: string
-}
 
-interface Medication {
-  medicationId: number
-  name: string
-  dosage: string
-  frequency: string
-}
-
-interface Assignment {
-  patientId: number
-  patientName: string
-  medicationId: number
-  medicationName: string
-  remainingDays: number
-}
 
 export default function AssignmentTable() {
-  const patients: Patient[] = [
-    { patientId: 1, name: "John Doe", dateOfBirth: "1990-05-15" },
-    { patientId: 2, name: "Jane Smith", dateOfBirth: "1985-08-10" },
-  ]
 
-  const medications: Medication[] = [
-    { medicationId: 1, name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-    { medicationId: 2, name: "Amoxicillin", dosage: "250mg", frequency: "Three times a day" },
-  ]
+  const patients: Patient[] = []
+
+  const medications: Medication[] = []
 
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -62,6 +39,15 @@ export default function AssignmentTable() {
     startDate: "",
     numberOfDays: 0,
   })
+
+  useEffect(()=>{
+    fetch(`${BACKEND_URL}/assign/get/remain/treatment-days`)
+    .then((res)=>res.json())
+    .then((data)=> {
+      setAssignments(data);
+      console.log(data)
+    })
+  }, [])
 
   const handleSave = () => {
     const selectedPatient = patients.find(p => p.patientId === Number(formData.patientId))

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus, Trash2, Save, X } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
@@ -20,23 +20,16 @@ import {
   DialogTrigger,
 } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
+import { BACKEND_URL } from "../config"
 
 export default function CrudTable() {
-  const [users, setUsers] = useState<Medication[]>([
-    {
-      medicationId: "1",
-      name: "Aspirin",
-      dosage: "500mg",
-      frequency: "Daily",
-    },
-    {
-      medicationId: "2",
-      name: "Ibuprofen",
-      dosage: "200mg",
-      frequency: "Twice a day",
-    },
-  ])
+  const [medications, setMedications] = useState<Medication[]>([])
 
+  useEffect(()=>{
+    fetch(`${BACKEND_URL}/medications/all`)
+    .then((res) =>res.json())
+    .then((data) => setMedications(data))
+  })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -46,10 +39,10 @@ export default function CrudTable() {
 
   const handleSave = () => {
     const newMedication: Medication = {
-      medicationId: Date.now().toString(), // Or use a UUID library
+      medicationId: Date.now().toString(), 
       ...formData,
     }
-    setUsers([...users, newMedication])
+    setMedications([...medications, newMedication])
     setIsDialogOpen(false)
     setFormData({ name: "", dosage: "", frequency: "" })
   }
@@ -60,7 +53,7 @@ export default function CrudTable() {
   }
 
   const handleDelete = (id: string) => {
-    setUsers(users.filter((user) => user.medicationId !== id))
+    setMedications(medications.filter((user) => user.medicationId !== id))
   }
 
   const handleAdd = () => {
@@ -153,7 +146,7 @@ export default function CrudTable() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {medications.map((user) => (
                   <tr
                     key={user.medicationId}
                     className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
@@ -176,7 +169,7 @@ export default function CrudTable() {
                 ))}
               </tbody>
             </table>
-            {users.length === 0 && (
+            {medications.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No medications found. Click "Add Medication" to create your first one.
               </div>
