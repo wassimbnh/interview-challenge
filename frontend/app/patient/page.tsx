@@ -27,7 +27,18 @@ import { CalendarIcon } from "lucide-react"
 import { BACKEND_URL } from "../config"
 
 export default function PatientTable() {
+
+
   const [patients, setPatients] = useState<Patient[]>([])
+  const [formErrors, setFormErrors] = useState({
+    name: "",
+    dateOfBirth: "",
+  })
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    dateOfBirth: "",
+  })
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/patients/all`)
@@ -35,21 +46,37 @@ export default function PatientTable() {
       .then((data) => setPatients(data))
   }, [])
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [formData, setFormData] = useState({
-    name: "",
-    dateOfBirth: "",
-  })
+  const handleSave = async () => {
+  const errors = {
+    name: formData.name.trim() === "" ? "Name is required" : "",
+    dateOfBirth: formData.dateOfBirth === "" ? "Date of Birth is required" : "",
+  }
 
-  const handleSave = () => {
-    const newPatient: Patient = {
-      patientId: 2, // Or use a UUID library
-      ...formData,
-    }
-    setPatients([...patients, newPatient])
+  setFormErrors(errors)
+
+  const hasErrors = Object.values(errors).some((msg) => msg !== "")
+  if (hasErrors) return
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/patients/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+
+    if (!response.ok) throw new Error("Failed to create patient")
+
+    const createdPatient = await response.json()
+    setPatients((prev) => [...prev, createdPatient])
     setIsDialogOpen(false)
     setFormData({ name: "", dateOfBirth: "" })
+    setFormErrors({ name: "", dateOfBirth: "" }) 
+  } catch (error) {
+    console.error("Error creating patient:", error)
   }
+}
+
+
 
   const handleCancel = () => {
     setIsDialogOpen(false)
@@ -99,6 +126,9 @@ export default function PatientTable() {
                       placeholder="Enter name"
                       className="col-span-3"
                     />
+                    {formErrors.name && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.name}</div>
+                    )}
                   </div>
                   
                   <div className="grid grid-cols-4 items-center gap-4">
@@ -131,6 +161,9 @@ export default function PatientTable() {
                           initialFocus
                         />
                       </PopoverContent>
+                      {formErrors.dateOfBirth && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.dateOfBirth}</div>
+                    )}
                     </Popover>
                   </div>
                 </div>

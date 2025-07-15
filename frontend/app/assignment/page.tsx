@@ -21,18 +21,22 @@ import {
 } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
 import { BACKEND_URL } from "../config"
-
+import { useRouter } from "next/navigation"
 
 
 export default function AssignmentTable() {
 
-  const patients: Patient[] = []
-
-  const medications: Medication[] = []
 
   const [assignments, setAssignments] = useState<Assignment[]>([])
+  const [patients, setPatients] = useState<Patient[]>([])
+  const [medications, setMedications] = useState<Medication[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
+  const [formErrors, setFormErrors] = useState({
+    medication: "",
+    patient: "",
+    startDate: "",
+    days: ""
+  })
   const [formData, setFormData] = useState({
     patientId: 0,
     medicationId: 0,
@@ -40,29 +44,78 @@ export default function AssignmentTable() {
     numberOfDays: 0,
   })
 
-  useEffect(()=>{
-    fetch(`${BACKEND_URL}/assign/get/remain/treatment-days`)
+  const router = useRouter()
+
+  const getAllPatients=() =>{
+    fetch(`${BACKEND_URL}/patients/all`)
     .then((res)=>res.json())
     .then((data)=> {
-      setAssignments(data);
-      console.log(data)
+      setPatients(data);
     })
+  }
+
+  const getAllMedications=() =>{
+    fetch(`${BACKEND_URL}/medications/all`)
+    .then((res)=>res.json())
+    .then((data)=> {
+      setMedications(data);
+    })
+  }
+
+  const fetchAssignments = async () => {
+    const res = await fetch(`${BACKEND_URL}/assign/get/remain/treatment-days`)
+    const data = await res.json()
+    setAssignments(data)
+  }
+
+  useEffect(()=>{
+    fetchAssignments();
+    getAllMedications();
+    getAllPatients();
   }, [])
 
-  const handleSave = () => {
+  const handleSave = async () => {
+
+    const errors = {
+    medication: formData.medicationId === null ? "Medication is required" : "",
+    patient: formData.patientId === null ? "Patient is required" : "",
+    startDate: formData.startDate === "" ? "Start date is required" : "",
+    days: formData.numberOfDays === null ? "Days are required": ""
+    }
+    setFormErrors(errors)
+    
+    const hasErrors = Object.values(errors).some((msg) => msg !== "")
+    if (hasErrors) return
+
     const selectedPatient = patients.find(p => p.patientId === Number(formData.patientId))
     const selectedMedication = medications.find(m => m.medicationId === Number(formData.medicationId))
 
     if (selectedPatient && selectedMedication) {
-      const newAssignment: Assignment = {
+
+      const newAssignment: CreateAssignment = {
         patientId: selectedPatient.patientId,
-        patientName: selectedPatient.name,
         medicationId: selectedMedication.medicationId,
-        medicationName: selectedMedication.name,
-        remainingDays: formData.numberOfDays,
+        startDate: formData.startDate,
+        numberOfDays: formData.numberOfDays,
       }
 
-      setAssignments([...assignments, newAssignment])
+      try {
+        const response = await fetch(`${BACKEND_URL}/assign/medication/patient?patientId=${selectedPatient.patientId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newAssignment),
+      })
+
+      if (!response.ok) throw new Error("Failed to create medication")
+
+      await fetchAssignments();
+      setIsDialogOpen(false);
+      setFormData({ patientId: 0, medicationId: 0, startDate: "", numberOfDays:0})
+      setFormErrors({ patient: "", medication: "", startDate: "", days:""}) 
+    } catch (error) {
+      console.error("Error creating patient:", error)
+  }
+
       setIsDialogOpen(false)
 
       setFormData({
@@ -94,14 +147,14 @@ export default function AssignmentTable() {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2">
+                <Button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2 cursor-pointer">
                   <Plus className="h-4 w-4" />
-                  Add Medication
+                  Add Assignment
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Add New Medication</DialogTitle>
+                  <DialogTitle>Add New Assignment</DialogTitle>
                   <DialogDescription>
                     Fill in all the required information below.
                   </DialogDescription>
@@ -136,7 +189,7 @@ export default function AssignmentTable() {
                     >
                       <option value="">Select Medication</option>
                       {medications.map((med) => (
-                        <option key={med.medicationId} value={med.medicationId}>
+                        <option key={`${med.medicationId}-${med.name}`} value={med.medicationId}>
                           {med.name}
                         </option>
                       ))}
@@ -170,8 +223,8 @@ export default function AssignmentTable() {
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleCancel} variant="outline">Cancel</Button>
-                  <Button onClick={handleSave} className="flex items-center gap-2">
+                  <Button onClick={handleCancel} className="cursor-pointer" variant="outline">Cancel</Button>
+                  <Button onClick={handleSave} className="flex items-center gap-2 cursor-pointer">
                     <Save className="h-4 w-4" />
                     Save Medication
                   </Button>

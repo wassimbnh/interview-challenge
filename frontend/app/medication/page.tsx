@@ -23,7 +23,13 @@ import { Label } from "@/app/components/ui/label"
 import { BACKEND_URL } from "../config"
 
 export default function CrudTable() {
+
   const [medications, setMedications] = useState<Medication[]>([])
+  const [formErrors, setFormErrors] = useState({
+    name: "",
+    dosage: "",
+    frequency: ""
+  })
 
   useEffect(()=>{
     fetch(`${BACKEND_URL}/medications/all`)
@@ -37,27 +43,49 @@ export default function CrudTable() {
     frequency: "",
   })
 
-  const handleSave = () => {
-    const newMedication: Medication = {
-      medicationId: Date.now().toString(), 
-      ...formData,
-    }
-    setMedications([...medications, newMedication])
-    setIsDialogOpen(false)
-    setFormData({ name: "", dosage: "", frequency: "" })
+  const handleSave = async () => {
+  const errors = {
+    name: formData.name.trim() === "" ? "Name is required" : "",
+    dosage: formData.dosage === "" ? "Date of Birth is required" : "",
+    frequency: formData.frequency === "" ? "Frequency is required" : "",
   }
+ 
+  setFormErrors(errors)
+
+  const hasErrors = Object.values(errors).some((msg) => msg !== "")
+  if (hasErrors) return
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/medications/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+
+    if (!response.ok) throw new Error("Failed to create medication")
+
+    const createdPatient = await response.json()
+    setMedications((prev) => [...prev, createdPatient])
+    setIsDialogOpen(false)
+    setFormData({ name: "", dosage: "", frequency: ""})
+    setFormErrors({ name: "", dosage: "", frequency: ""}) 
+  } catch (error) {
+    console.error("Error creating patient:", error)
+  }
+}
 
   const handleCancel = () => {
     setIsDialogOpen(false)
     setFormData({ name: "", dosage: "", frequency: "" })
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     setMedications(medications.filter((user) => user.medicationId !== id))
   }
 
   const handleAdd = () => {
-    setIsDialogOpen(true)
+    
+    (true)
   }
 
   return (
@@ -95,6 +123,9 @@ export default function CrudTable() {
                       placeholder="Enter name"
                       className="col-span-3"
                     />
+                    {formErrors.name && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.name}</div>
+                    )}
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="dosage" className="text-right">
@@ -107,6 +138,9 @@ export default function CrudTable() {
                       placeholder="Enter dosage"
                       className="col-span-3"
                     />
+                    {formErrors.dosage && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.dosage}</div>
+                    )}
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="frequency" className="text-right">
@@ -119,6 +153,9 @@ export default function CrudTable() {
                       placeholder="Enter frequency"
                       className="col-span-3"
                     />
+                    {formErrors.frequency && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.frequency}</div>
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 cursor-pointer">
