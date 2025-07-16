@@ -21,8 +21,11 @@ import {
 } from "@/app/components/ui/dialog"
 import { Label } from "@/app/components/ui/label"
 import { BACKEND_URL } from "../config"
+import { useRouter } from "next/navigation"
 
 export default function CrudTable() {
+
+  const router = useRouter()
 
   const [medications, setMedications] = useState<Medication[]>([])
   const [formErrors, setFormErrors] = useState({
@@ -79,17 +82,22 @@ export default function CrudTable() {
     setFormData({ name: "", dosage: "", frequency: "" })
   }
 
-  const handleDelete = (id: number) => {
-    setMedications(medications.filter((user) => user.medicationId !== id))
+  const getOne = (id: number) => {
   }
 
   const handleAdd = () => {
     
-    (true)
   }
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
+      <Button
+        variant="outline"
+        className="mb-4 flex items-center gap-2 cursor-pointer"
+        onClick={() => router.back()}
+      >
+        ← Back
+      </Button>
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -193,13 +201,12 @@ export default function CrudTable() {
                     <td className="p-4 text-gray-700">{user.frequency}</td>
                     <td className="p-4">
                       <Button
-                        onClick={() => handleDelete(user.medicationId)}
-                        variant="destructive"
+                        onClick={() => getOne(user.medicationId)}
+                        variant="outline"
                         size="sm"
                         className="flex items-center gap-1"
                       >
-                        <Trash2 className="h-3 w-3" />
-                        Delete
+                        see
                       </Button>
                     </td>
                   </tr>

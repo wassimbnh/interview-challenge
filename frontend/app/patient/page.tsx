@@ -25,9 +25,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/pop
 import { Calendar } from "@/app/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
 import { BACKEND_URL } from "../config"
+import { useRouter } from "next/navigation"
+import { da } from "date-fns/locale"
 
 export default function PatientTable() {
 
+  const router = useRouter()
 
   const [patients, setPatients] = useState<Patient[]>([])
   const [formErrors, setFormErrors] = useState({
@@ -45,6 +48,12 @@ export default function PatientTable() {
       .then((res) => res.json())
       .then((data) => setPatients(data))
   }, [])
+
+  const fetchPatients = async () =>{
+    const res = await fetch(`${BACKEND_URL}/patients/all`)
+    const data = await res.json()
+    setPatients(data)
+  }
 
   const handleSave = async () => {
   const errors = {
@@ -77,14 +86,13 @@ export default function PatientTable() {
 }
 
 
-
   const handleCancel = () => {
     setIsDialogOpen(false)
     setFormData({ name: "", dateOfBirth: "" })
   }
 
-  const handleDelete = (id: number) => {
-    setPatients(patients.filter((patient) => patient.patientId !== id))
+  const getOne = async (patientId: number) => {
+
   }
 
   const handleAdd = () => {
@@ -93,6 +101,13 @@ export default function PatientTable() {
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
+      <Button
+        variant="outline"
+        className="mb-4 flex items-center gap-2 cursor-pointer"
+        onClick={() => router.back()}
+      >
+        ← Back
+      </Button>
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -201,13 +216,12 @@ export default function PatientTable() {
                     <td className="p-4 text-gray-700">{patient.dateOfBirth}</td>
                     <td className="p-4">
                       <Button
-                        onClick={() => handleDelete(patient.patientId)}
-                        variant="destructive"
+                        onClick={() => getOne(patient.patientId)}
+                        variant="outline"
                         size="sm"
                         className="flex items-center gap-1 cursor-pointer"
                       >
-                        <Trash2 className="h-3 w-3" />
-                        Delete
+                        See
                       </Button>
                     </td>
                   </tr>

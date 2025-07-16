@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Documentation
 
-## Getting Started
+Hi! 👋 This documentation will help us understand the project structure, endpoints, and routes.
 
-First, run the development server:
+---
+
+## 🎯 Running the Project
+
+**Backend:**
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd backend
+npm install
+npm run start:dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Access on `http://localhost:8080/api`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Frontend:**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Learn More
+Access on `http://localhost:3000`.
 
-To learn more about Next.js, take a look at the following resources:
+The SQLite database is located at `backend/database.sqlite`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📩 Backend Endpoint
 
-## Deploy on Vercel
+👤 Patients Endpoints
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Method | Endpoint           | Query Params | Description                |
+| ------ | ------------------ | ------------ | -------------------------- |
+| POST   | `/patients/create` | –            | Create a new patient       |
+| GET    | `/patients/all`    | –            | Retrieve all patients      |
+| GET    | `/patients/one`    | `patientId`  | Retrieve one patient by ID |
+| PUT    | `/patients/update` | `patientId`  | Update a patient by ID     |
+| DELETE | `/patients/delete` | `patientId`  | Delete a patient by ID     |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+💊 Medications Endpoints
+
+| Method | Endpoint              | Query Params   | Description                   |
+| ------ | --------------------- | -------------- | ----------------------------- |
+| POST   | `/medications/create` | –              | Create a new medication       |
+| GET    | `/medications/all`    | –              | Retrieve all medications      |
+| GET    | `/medications/one`    | `medicationId` | Retrieve one medication by ID |
+| PUT    | `/medications/update` | `medicationId` | Update a medication by ID     |
+| DELETE | `/medications/delete` | `medicationId` | Delete a medication by ID     |
+
+📋 Assignments Endpoints
+
+| Method | Endpoint                            | Query Params                | Description                  |
+| ------ | ----------------------------------- | --------------------------- | ---------------------------- |
+| POST   | `/assign/medication/patient`        | `patientId`                 | Assign medication patient    |
+| GET    | `/assign/get/medication-by-patient` | `patientId`                 | Get medications of patient   |
+| GET    | `/assign/get/by-patient`            | `patientId`                 | Get all assignment of patient|
+| GET    | `/assign/get/remain/treatment-days` | –                           | Get remaining treatment day  |
+| DELETE | `/assign/delete`                    | `patientId`, `medicationId` | Delete specific assignment   |
+
+
+
+## 📩 Frontend Routes
+
+| Route                   | Description                     | 
+| ------------------------| --------------------------------| 
+| `/`                     | Main page                       | 
+| `/medication`           | Access to medications operations| 
+| `/patient`              | Access to patients operations   |  
+| `/assignment`           | Access to assignments operations| 
+
+
+Thank you for your interest.

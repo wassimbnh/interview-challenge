@@ -23,17 +23,17 @@ import { Label } from "@/app/components/ui/label"
 import { BACKEND_URL } from "../config"
 import { useRouter } from "next/navigation"
 
-
 export default function AssignmentTable() {
 
+  const router = useRouter()
 
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [patients, setPatients] = useState<Patient[]>([])
   const [medications, setMedications] = useState<Medication[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [formErrors, setFormErrors] = useState({
-    medication: "",
-    patient: "",
+    medicationId: "",
+    patientId: "",
     startDate: "",
     days: ""
   })
@@ -44,7 +44,6 @@ export default function AssignmentTable() {
     numberOfDays: 0,
   })
 
-  const router = useRouter()
 
   const getAllPatients=() =>{
     fetch(`${BACKEND_URL}/patients/all`)
@@ -77,10 +76,10 @@ export default function AssignmentTable() {
   const handleSave = async () => {
 
     const errors = {
-    medication: formData.medicationId === null ? "Medication is required" : "",
-    patient: formData.patientId === null ? "Patient is required" : "",
-    startDate: formData.startDate === "" ? "Start date is required" : "",
-    days: formData.numberOfDays === null ? "Days are required": ""
+      medicationId: formData.medicationId === 0 ? "Medication is required" : "",
+      patientId: formData.patientId === 0 ? "Patient is required" : "",
+      startDate: formData.startDate === "" ? "Start date is required" : "",
+      days: formData.numberOfDays <= 0 ? "Days are required" : ""
     }
     setFormErrors(errors)
     
@@ -111,7 +110,7 @@ export default function AssignmentTable() {
       await fetchAssignments();
       setIsDialogOpen(false);
       setFormData({ patientId: 0, medicationId: 0, startDate: "", numberOfDays:0})
-      setFormErrors({ patient: "", medication: "", startDate: "", days:""}) 
+      setFormErrors({ patientId: "", medicationId: "", startDate: "", days:""}) 
     } catch (error) {
       console.error("Error creating patient:", error)
   }
@@ -132,12 +131,25 @@ export default function AssignmentTable() {
     setFormData({ patientId: 0, medicationId: 0, startDate: "", numberOfDays: 0 })
   }
 
-  const handleDelete = (medicationId: number) => {
-    setAssignments(assignments.filter(a => a.medicationId !== medicationId))
+  const handleDelete = async (medicationId: number, patientId: number) => {
+    await fetch(`${BACKEND_URL}/assign/delete?patientId=${patientId}&medicationId=${medicationId}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+      })
+
+    await fetchAssignments();
+
   }
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
+      <Button
+        variant="outline"
+        className="mb-4 flex items-center gap-2 cursor-pointer"
+        onClick={() => router.back()}
+      >
+        ← Back
+      </Button>
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -176,6 +188,9 @@ export default function AssignmentTable() {
                         </option>
                       ))}
                     </select>
+                    {formErrors.patientId && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.patientId}</div>
+                    )}
                   </div>
 
                   {/* Medication Select */}
@@ -194,6 +209,9 @@ export default function AssignmentTable() {
                         </option>
                       ))}
                     </select>
+                    {formErrors.medicationId && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.medicationId}</div>
+                    )}
                   </div>
 
                   {/* Start Date */}
@@ -206,6 +224,9 @@ export default function AssignmentTable() {
                       onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                       className="col-span-3"
                     />
+                    {formErrors.startDate && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.startDate}</div>
+                    )}
                   </div>
 
                   {/* Number of Days */}
@@ -219,6 +240,9 @@ export default function AssignmentTable() {
                       onChange={(e) => setFormData({ ...formData, numberOfDays: Number(e.target.value) })}
                       className="col-span-3"
                     />
+                    {formErrors.days && (
+                      <div className="col-start-2 col-span-3 text-red-500 text-sm">{formErrors.days}</div>
+                    )}
                   </div>
                 </div>
 
@@ -252,10 +276,10 @@ export default function AssignmentTable() {
                     <td className="p-4">{assignment.remainingDays}</td>
                     <td className="p-4">
                       <Button
-                        onClick={() => handleDelete(assignment.medicationId)}
+                        onClick={() => handleDelete(assignment.medicationId, assignment.patientId)}
                         variant="destructive"
                         size="sm"
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 cursor-pointer"
                       >
                         <Trash2 className="h-3 w-3" />
                         Delete
