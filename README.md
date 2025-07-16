@@ -1,81 +1,10 @@
 # 🚀 Documentation
 
-Hi! 👋 This documentation will help us understand your the project architecture, endpoints, and main routes.
+Hi! 👋 This documentation will help us understand the project structure, endpoints, and routes.
 
 ---
 
-## 🎯 The Challenge
-
-### 📝 Description
-
-In this async challenge, you will build a full-stack mini-app to manage patients, medications, and their treatment assignments for a digital health workflow.
-
-You will implement CRUD APIs using NestJS with a SQLite database (already configured) and a minimal Next.js frontend to interact with these APIs. A patient can have multiple medication assignments, and you will implement logic to calculate the remaining days of each treatment automatically.
-
-The goal is to evaluate your ability to:
-
-- Deliver clear, scalable, maintainable code.
-
-- Handle clean API design and testing.
-
-- Build a simple, functional UI connected to your backend.
-
-- Manage your workflow independently with clear commits.
-
-This test simulates real work at Oxyera: you will receive a task, execute it end-to-end, and submit it for review, demonstrating your ownership and technical skills without requiring continuous oversight.
-
-### ✅ What will you implement 
-
-✅ **Backend (NestJS, runs on port **`8080`**)**
-
-- CRUD endpoints for:
-  - `Patient` (name, date of birth)
-  - `Medication` (name, dosage, frequency)
-  - `Assignment` (assign a medication to a patient with a start date and number of days)
-- **A patient can have multiple medication assignments**.
-- Endpoint to calculate and return **remaining days of treatment** for each assignment (based on start date + days - today).
-- Endpoints should:
-  - Return clear, structured JSON.
-  - Validate input (e.g., required fields, valid dates).
-  - Return appropriate HTTP status codes.
-  - Be covered with at least **one unit test for calculation logic**.
-
-✅ **Frontend (Next.js, runs on port **`3000`**)**
-
-- Multiple pages with Tailwind for styling.
-- Features:
-  - List patients with their assignments and remaining treatment days.
-  - Forms to create:
-    - Patients
-    - Medications
-    - Assign medications to patients.
-- Display **remaining treatment days clearly per assignment**.
-- Use a **global constant for backend URL** for clarity.
-
-✅ Use the **SQLite DB already configured in** `/backend/database.sqlite`.
-
-✅ Commit clearly and progressively, showing your reasoning in your commit messages.
-
-✅ Use **TypeScript** everywhere.
-
-✅ Structure your code cleanly to reflect scalability.
-
----
-
-## ⚡ What We’re Evaluating
-
-- Clear and scalable folder structure.
-- Proper API design and HTTP handling.
-- Input validation and error handling.
-- Consistent, readable code.
-- Use of TypeScript types for safety.
-- Test quality and coverage of core logic.
-- Ability to deliver a working feature with clean commits.
-- UI clarity and correct functional connection with your backend.
-
----
-
-## 🚀 Running the Project
+## 🎯 Running the Project
 
 **Backend:**
 
@@ -85,7 +14,7 @@ npm install
 npm run start:dev
 ```
 
-Access on `http://localhost:8080`.
+Access on `http://localhost:8080/api`.
 
 **Frontend:**
 
@@ -101,13 +30,48 @@ The SQLite database is located at `backend/database.sqlite`.
 
 ---
 
-## 📩 Submission
+## 📩 Backend Endpoint
 
-✅ Complete by one week after you recieved the assignment. 
+👤 Patients Endpoints
 
-✅ Push to your your personal forked repo. 
+| Method | Endpoint           | Query Params | Description                |
+| ------ | ------------------ | ------------ | -------------------------- |
+| POST   | `/patients/create` | –            | Create a new patient       |
+| GET    | `/patients/all`    | –            | Retrieve all patients      |
+| GET    | `/patients/one`    | `patientId`  | Retrieve one patient by ID |
+| PUT    | `/patients/update` | `patientId`  | Update a patient by ID     |
+| DELETE | `/patients/delete` | `patientId`  | Delete a patient by ID     |
 
-✅ Email your repo link to [dev@oxyera.com](mailto\:dev@oxyera.com).
+💊 Medications Endpoints
 
-Thank you for your interest in Oxyera. We look forward to reviewing your structured, clear, and working solution!
+| Method | Endpoint              | Query Params   | Description                   |
+| ------ | --------------------- | -------------- | ----------------------------- |
+| POST   | `/medications/create` | –              | Create a new medication       |
+| GET    | `/medications/all`    | –              | Retrieve all medications      |
+| GET    | `/medications/one`    | `medicationId` | Retrieve one medication by ID |
+| PUT    | `/medications/update` | `medicationId` | Update a medication by ID     |
+| DELETE | `/medications/delete` | `medicationId` | Delete a medication by ID     |
 
+📋 Assignments Endpoints
+
+| Method | Endpoint                            | Query Params                | Description                  |
+| ------ | ----------------------------------- | --------------------------- | ---------------------------- |
+| POST   | `/assign/medication/patient`        | `patientId`                 | Assign medication patient    |
+| GET    | `/assign/get/medication-by-patient` | `patientId`                 | Get medications of patient   |
+| GET    | `/assign/get/by-patient`            | `patientId`                 | Get all assignment of patient|
+| GET    | `/assign/get/remain/treatment-days` | –                           | Get remaining treatment day  |
+| DELETE | `/assign/delete`                    | `patientId`, `medicationId` | Delete specific assignment   |
+
+
+
+## 📩 Frontend Routes
+
+| Route                   | Description                     | 
+| ------------------------| --------------------------------| 
+| `/`                     | Main page                       | 
+| `/medication`           | Access to medications operations| 
+| `/patient`              | Access to patients operations   |  
+| `/assignment`           | Access to assignments operations| 
+
+
+Thank you for your interest.
