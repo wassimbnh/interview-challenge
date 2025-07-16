@@ -1,6 +1,6 @@
-# 🚀 Oxyera Async Interview Challenge
+# 🚀 Documentation
 
-Hi! 👋 Welcome to the Oxyera async technical challenge. This test will help us evaluate your independence, code quality, organization, and technical decisions without ambiguity, so you can focus on delivering your best work.
+Hi! 👋 This documentation will help us understand your the project architecture, endpoints, and main routes.
 
 ---
 
