@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { AssignmentsService } from './assignments.service';
-import { AssignmentDto } from './dto/assignment.dto';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 
 @Controller('assign')
@@ -27,8 +26,13 @@ export class AssignmentsController {
     }
 
     @Get("/get/remain/treatment-days")
-    getRemainTreatmentDaysByPatient(@Query("patientId") patientId: number){
-        return this.assignService.getRemainTreatmentDaysByPatient(patientId)
+    getRemainTreatmentDaysByPatient(){
+        return this.assignService.getRemainTreatmentDaysByPatient()
+    }
+
+    @Delete("/delete")
+    deleteAssignmentsB(@Query("patientId") patientId: number, @Query("medicationId") medicationId: number){
+        return this.assignService.deleteAssignment(patientId, medicationId)
     }
 
 }

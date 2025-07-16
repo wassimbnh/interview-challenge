@@ -20,17 +20,17 @@ export class PatientsController {
     }
 
     @Get("/one")
-    getOnePatientById(@Query("id") id: number){
+    getOnePatientById(@Query("patientId") id: number){
         return this.patientsService.getOnePatientById(Number(id))
     }
 
-    @Put('/update/:id')
-    updatePatient(@Param('id') id: string, @Body(ValidationPipe) dto: UpdatePatientDto) {
+    @Put('/update')
+    updatePatient(@Query('patientId') id: string, @Body(ValidationPipe) dto: UpdatePatientDto) {
         return this.patientsService.updatePatient(+id, dto);
     }
 
-    @Delete("/delete/:id")
-    deleteOnePatient(@Param('id') id: string) {
+    @Delete("/delete")
+    deleteOnePatient(@Query('patientId') id: string) {
         return this.patientsService.deletePatient(+id);
     }
 

@@ -21,17 +21,17 @@ export class MedicationsController {
     }
 
     @Get("/one")
-    getOneMedication(@Query("id") id: number){
+    getOneMedication(@Query("medicationId") id: number){
         return this.medicationsService.getOneMedication(id)
     }
 
     @Put("/update")
-    updateMedication(@Query("id") id: number, @Body(ValidationPipe) updateMedicationDto: UpdateMedicationDto){
+    updateMedication(@Query("medicationId") id: number, @Body(ValidationPipe) updateMedicationDto: UpdateMedicationDto){
         return this.medicationsService.updateMedication(id, updateMedicationDto)
     }
 
     @Delete("/delete")
-    deleteMedication(@Query("id") id: number){
+    deleteMedication(@Query("medicationId") id: number){
         return this.medicationsService.deleteMedication(id)
     }
 

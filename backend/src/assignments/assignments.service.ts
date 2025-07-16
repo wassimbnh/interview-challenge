@@ -12,6 +12,7 @@ import { RemainTreatment } from './interfaces/remain-days.interface';
 @Injectable()
 export class AssignmentsService {
     
+   
     
     constructor(
         @InjectRepository(Assignment) private assignRepository: Repository<Assignment>,
@@ -49,8 +50,8 @@ export class AssignmentsService {
     }
 
 
-    async getRemainTreatmentDaysByPatient(patientId: number): Promise<RemainTreatment[]>{
-        const assignments = await this.getAllAssignmentsByPatient(patientId);
+    async getRemainTreatmentDaysByPatient(): Promise<RemainTreatment[]>{
+        const assignments = await this.getAllAssignments();
         
         const today = new Date();
 
@@ -60,11 +61,11 @@ export class AssignmentsService {
             const remaining = Math.max(0, differenceInDays(end, today));
 
                 return {
-                medicationId: assign.medicationId,
-                medicationName: assign.medication?.name,
-                patientId: assign.patient.patientId,
-                patientName: assign.patient.name,
-                remainingDays: remaining,
+                    medicationId: assign.medicationId,
+                    medicationName: assign.medication?.name,
+                    patientId: assign.patient.patientId,
+                    patientName: assign.patient.name,
+                    remainingDays: remaining,
                 };
             });
     }
@@ -89,6 +90,26 @@ export class AssignmentsService {
 
         return assignments
     }
+
+    async getAllAssignments() {
+        const allAssignments = await this.assignRepository.find({
+            
+            relations: ['medication', 'patient'],
+        });
+
+        return allAssignments
+    }
+
+
+    async deleteAssignment(patientId: number, medicationId: number) {
+        const assignment = await this.assignRepository.find({
+            where: { patient: { patientId: patientId }, medication: { medicationId: medicationId} },
+            relations: ['medication', 'patient'],
+        })
+        if (!assignment) throw new NotFoundException(`Assignment not found`);
+        await this.assignRepository.remove(assignment);
+    }
+
 }
 
 
